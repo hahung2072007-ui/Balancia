@@ -25,8 +25,11 @@ nav.tabs button.active{background:linear-gradient(135deg,var(--brand),var(--bran
 .q-do .dot{background:var(--do)}.q-schedule .dot{background:var(--schedule)}.q-delegate .dot{background:var(--delegate)}.q-delete .dot{background:var(--delete)}
 .q-do{border-top:3px solid var(--do)}.q-schedule{border-top:3px solid var(--schedule)}.q-delegate{border-top:3px solid var(--delegate)}.q-delete{border-top:3px solid var(--delete)}
 .task{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-.task .meta{font-size:11px;color:var(--muted)}.task .tag{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(108,140,255,.18);color:var(--brand)}
-.task button{background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:16px}
+.task .meta{font-size:11px;color:var(--muted);margin-top:2px}
+.task .timetag{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#cdd6ff;background:rgba(108,140,255,.16);border:1px solid rgba(108,140,255,.3);padding:1px 7px;border-radius:20px;margin-top:4px}
+.task .tag{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(108,140,255,.18);color:var(--brand)}
+.task .calicon{font-size:11px;color:var(--brand);margin-right:4px}
+.task button.del{background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:16px}
 .addbar{display:flex;flex-wrap:wrap;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:18px}
 .addbar input,.addbar select{background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:10px 12px;border-radius:10px;font-size:14px}
 .addbar input[type=text]{flex:1;min-width:180px}
@@ -44,10 +47,11 @@ nav.tabs button.active{background:linear-gradient(135deg,var(--brand),var(--bran
 .corner{background:var(--panel2);border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
 .evt{position:absolute;left:3px;right:3px;border-radius:8px;padding:4px 6px;font-size:11px;color:#08102a;overflow:hidden;z-index:4;box-shadow:var(--shadow);cursor:pointer}
 .evt b{display:block;font-size:11px;line-height:1.2}.evt small{font-size:9px;opacity:.85}
+.evt .pri{position:absolute;top:3px;right:4px;font-size:9px;font-weight:800;background:rgba(0,0,0,.25);border-radius:6px;padding:0 4px}
 .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:12px;height:12px;border-radius:4px;display:inline-block}
 .modal-bg{position:fixed;inset:0;background:rgba(5,7,20,.7);display:none;place-items:center;z-index:50}.modal-bg.open{display:grid}
-.modal{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;width:min(420px,92vw);box-shadow:var(--shadow)}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;width:min(440px,92vw);box-shadow:var(--shadow)}
 .modal h3{margin-bottom:14px}.modal label{font-size:12px;color:var(--muted);display:block;margin:10px 0 4px}
 .modal input,.modal select{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:10px;border-radius:10px;font-size:14px}
 .modal .row{display:flex;gap:10px}.modal .row>*{flex:1}.modal .actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
@@ -55,6 +59,7 @@ nav.tabs button.active{background:linear-gradient(135deg,var(--brand),var(--bran
 .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}.card .num{font-size:30px;font-weight:800}.card .cap{color:var(--muted);font-size:13px}
 .hero{background:linear-gradient(135deg,rgba(108,140,255,.18),rgba(157,123,255,.12));border:1px solid var(--line);border-radius:20px;padding:26px;margin-bottom:20px}
 .hero h2{font-size:26px;margin-bottom:8px}.hero p{color:var(--muted);max-width:620px}
+.note{font-size:12px;color:var(--muted);background:rgba(108,140,255,.08);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:14px}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:30px 0 12px}
 @media(max-width:760px){nav.tabs{flex-wrap:wrap}.matrix{grid-template-columns:1fr}}
 </style>
@@ -73,20 +78,21 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:30px 0 12px}
     <div class="hero"><h2>Focus on what actually matters.</h2>
     <p>Balancia helps you organize academic and extracurricular tasks in one place. Sort by urgency and importance with the Eisenhower Matrix, then drop everything onto a weekly calendar so every commitment gets its place.</p></div>
     <div class="cards">
-      <div class="card"><div class="num" id="c-total">0</div><div class="cap">Total tasks</div></div>
+      <div class="card"><div class="num" id="c-total">0</div><div class="cap">Total items</div></div>
       <div class="card"><div class="num" id="c-do" style="color:var(--do)">0</div><div class="cap">Do First (urgent + important)</div></div>
-      <div class="card"><div class="num" id="c-sched" style="color:var(--schedule)">0</div><div class="cap">Scheduled</div></div>
+      <div class="card"><div class="num" id="c-sched" style="color:var(--schedule)">0</div><div class="cap">Schedule (important)</div></div>
       <div class="card"><div class="num" id="c-events" style="color:var(--brand)">0</div><div class="cap">Calendar events this week</div></div>
     </div>
     <div class="section-title">How it works</div>
-    <div class="section-sub">Add a task, it gets auto-sorted into the matrix, then schedule it on your weekly calendar.</div>
+    <div class="section-sub">Add a task or a calendar event. Everything shows up in the Eisenhower Matrix, sorted by urgency and importance, with its scheduled time when you set one.</div>
   </section>
   <section class="view" id="matrix">
     <div class="section-title">Eisenhower Matrix</div>
-    <div class="section-sub">Sort every commitment by urgency and importance.</div>
+    <div class="section-sub">Every task and calendar event, sorted by urgency and importance.</div>
+    <div class="note">Calendar events appear here automatically with their scheduled time. They are marked with a calendar icon. Edit their time on the Weekly Calendar tab.</div>
     <div class="addbar">
-      <input type="text" id="t-title" placeholder="Task name (e.g. Calculus problem set)">
-      <select id="t-cat"><option>Academic</option><option>Extracurricular</option><option>Personal</option></select>
+      <input type="text" id="t-title" placeholder="Quick task (e.g. Calculus problem set)">
+      <select id="t-cat"><option value="academic">Academic</option><option value="extracurricular">Extracurricular</option><option value="personal">Personal</option></select>
       <select id="t-urg"><option value="1">Urgent</option><option value="0">Not urgent</option></select>
       <select id="t-imp"><option value="1">Important</option><option value="0">Not important</option></select>
       <button class="btn" id="addTask">Add task</button>
@@ -113,7 +119,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:30px 0 12px}
       <span><i style="background:#ff5c7a"></i>Academic</span>
       <span><i style="background:#ffb13d"></i>Extracurricular</span>
       <span><i style="background:#36d1a6"></i>Personal</span>
-      <span style="margin-left:auto">Tip: click any empty slot to add an event there.</span>
+      <span style="margin-left:auto">New events also appear in the Eisenhower Matrix. Click any empty slot to add one.</span>
     </div>
   </section>
   <footer>Balancia prototype - Built to reduce the mental load of juggling student life.</footer>
@@ -127,6 +133,10 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:30px 0 12px}
     <div><label>Day</label><select id="e-day"></select></div>
     <div><label>Start</label><select id="e-start"></select></div>
     <div><label>End</label><select id="e-end"></select></div>
+  </div>
+  <div class="row">
+    <div><label>Urgency</label><select id="e-urg"><option value="1">Urgent</option><option value="0">Not urgent</option></select></div>
+    <div><label>Importance</label><select id="e-imp"><option value="1">Important</option><option value="0">Not important</option></select></div>
   </div>
   <div class="actions">
     <button class="btn ghost" id="deleteEvent" style="display:none;margin-right:auto;color:var(--do)">Delete</button>
@@ -143,118 +153,24 @@ document.querySelectorAll('nav.tabs button').forEach(function(b){
     document.getElementById(b.dataset.view).classList.add('active');
   };
 });
-var tasks=JSON.parse(localStorage.getItem('balancia_tasks')||'null')||[
-  {title:'Midterm exam - Statistics',cat:'Academic',u:1,i:1},
-  {title:'Read 2 chapters for Literature',cat:'Academic',u:0,i:1},
-  {title:'Reply to club group chat',cat:'Extracurricular',u:1,i:0},
-  {title:'Scroll social media',cat:'Personal',u:0,i:0},
-  {title:'Volunteer event sign-up',cat:'Extracurricular',u:0,i:1}
-];
-function saveTasks(){localStorage.setItem('balancia_tasks',JSON.stringify(tasks));}
-function renderTasks(){
-  var q={q1:[],q2:[],q3:[],q4:[]};
-  tasks.forEach(function(t,idx){
-    var k=t.u&&t.i?'q1':(!t.u&&t.i?'q2':(t.u&&!t.i?'q3':'q4'));
-    q[k].push('<div class="task"><div><div>'+t.title+'</div><div class="meta">'+t.cat+'</div></div><div style="display:flex;gap:6px;align-items:center"><span class="tag">'+t.cat+'</span><button onclick="delTask('+idx+')">x</button></div></div>');
-  });
-  for(var k in q)document.getElementById(k).innerHTML=q[k].join('')||'<div class="meta" style="padding:6px">No tasks</div>';
-  document.getElementById('c-total').textContent=tasks.length;
-  document.getElementById('c-do').textContent=tasks.filter(function(t){return t.u&&t.i;}).length;
-  document.getElementById('c-sched').textContent=tasks.filter(function(t){return !t.u&&t.i;}).length;
-}
-window.delTask=function(i){tasks.splice(i,1);saveTasks();renderTasks();};
-document.getElementById('addTask').onclick=function(){
-  var ti=document.getElementById('t-title').value.trim();if(!ti)return;
-  tasks.push({title:ti,cat:document.getElementById('t-cat').value,u:+document.getElementById('t-urg').value,i:+document.getElementById('t-imp').value});
-  document.getElementById('t-title').value='';saveTasks();renderTasks();
-};
 var DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 var START_HOUR=7,END_HOUR=22;
 var catColor={academic:'#ff5c7a',extracurricular:'#ffb13d',personal:'#36d1a6'};
+var catLabel={academic:'Academic',extracurricular:'Extracurricular',personal:'Personal'};
 var weekOffset=0,editIdx=null;
-var events=JSON.parse(localStorage.getItem('balancia_events')||'null')||[
-  {title:'Calculus Lecture',cat:'academic',day:0,start:9,end:10},
-  {title:'Debate Club',cat:'extracurricular',day:2,start:16,end:18},
-  {title:'Gym',cat:'personal',day:4,start:7,end:8},
-  {title:'Chem Lab',cat:'academic',day:1,start:13,end:15},
-  {title:'Study group',cat:'academic',day:3,start:19,end:21}
+var tasks=JSON.parse(localStorage.getItem('balancia_tasks_v2')||'null')||[
+  {title:'Midterm exam - Statistics',cat:'academic',u:1,i:1},
+  {title:'Read 2 chapters for Literature',cat:'academic',u:0,i:1},
+  {title:'Reply to club group chat',cat:'extracurricular',u:1,i:0},
+  {title:'Scroll social media',cat:'personal',u:0,i:0}
 ];
-function saveEvents(){localStorage.setItem('balancia_events',JSON.stringify(events));}
-function mondayOf(off){var d=new Date();var day=(d.getDay()+6)%7;d.setDate(d.getDate()-day+off*7);d.setHours(0,0,0,0);return d;}
+var events=JSON.parse(localStorage.getItem('balancia_events_v2')||'null')||[
+  {title:'Calculus Lecture',cat:'academic',day:0,start:9,end:10,u:1,i:1},
+  {title:'Debate Club',cat:'extracurricular',day:2,start:16,end:18,u:0,i:1},
+  {title:'Gym',cat:'personal',day:4,start:7,end:8,u:0,i:0},
+  {title:'Chem Lab',cat:'academic',day:1,start:13,end:15,u:1,i:1},
+  {title:'Study group',cat:'academic',day:3,start:19,end:21,u:0,i:1}
+];
+function saveTasks(){localStorage.setItem('balancia_tasks_v2',JSON.stringify(tasks));}
+function saveEvents(){localStorage.setItem('balancia_events_v2',JSON.stringify(events));}
 function fmtHour(h){var ap=h<12?'AM':'PM';var hr=h%12;if(hr===0)hr=12;return hr+' '+ap;}
-function buildCalendar(){
-  var grid=document.getElementById('calGrid');
-  var mon=mondayOf(weekOffset);
-  var today=new Date();today.setHours(0,0,0,0);
-  var html='<div class="cal-head corner"></div>';
-  for(var d=0;d<7;d++){
-    var dt=new Date(mon);dt.setDate(mon.getDate()+d);
-    var isToday=dt.getTime()===today.getTime();
-    html+='<div class="cal-head'+(isToday?' today':'')+'">'+DAYS[d]+'<small>'+(dt.getMonth()+1)+'/'+dt.getDate()+'</small></div>';
-  }
-  for(var h=START_HOUR;h<END_HOUR;h++){
-    html+='<div class="timecol">'+fmtHour(h)+'</div>';
-    for(var d2=0;d2<7;d2++){html+='<div class="cell" data-day="'+d2+'" data-hour="'+h+'"></div>';}
-  }
-  grid.innerHTML=html;
-  events.forEach(function(ev,idx){
-    if(ev.start<START_HOUR||ev.start>=END_HOUR)return;
-    var cell=grid.querySelector('.cell[data-day="'+ev.day+'"][data-hour="'+ev.start+'"]');
-    if(!cell)return;
-    var dur=Math.max(1,ev.end-ev.start);
-    var el=document.createElement('div');
-    el.className='evt';el.style.background=catColor[ev.cat];el.style.height=(dur*48-6)+'px';
-    el.innerHTML='<b>'+ev.title+'</b><small>'+fmtHour(ev.start)+' to '+fmtHour(ev.end)+'</small>';
-    el.onclick=function(e){e.stopPropagation();openModal(idx);};
-    cell.appendChild(el);
-  });
-  grid.querySelectorAll('.cell').forEach(function(c){
-    c.onclick=function(){openModal(null,+c.dataset.day,+c.dataset.hour);};
-  });
-  var e=new Date(mon);e.setDate(mon.getDate()+6);
-  var opt={month:'short',day:'numeric'};
-  document.getElementById('weekLabel').textContent=mon.toLocaleDateString(undefined,opt)+' to '+e.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
-  document.getElementById('c-events').textContent=events.length;
-}
-function fillHourSelect(sel){var o='';for(var h=START_HOUR;h<=END_HOUR;h++)o+='<option value="'+h+'">'+fmtHour(h)+'</option>';sel.innerHTML=o;}
-function fillDaySelect(){var o='';DAYS.forEach(function(d,i){o+='<option value="'+i+'">'+d+'</option>';});document.getElementById('e-day').innerHTML=o;}
-function openModal(idx,day,hour){
-  editIdx=idx;
-  fillDaySelect();fillHourSelect(document.getElementById('e-start'));fillHourSelect(document.getElementById('e-end'));
-  var del=document.getElementById('deleteEvent');
-  if(idx!=null){
-    var ev=events[idx];
-    document.getElementById('modalTitle').textContent='Edit event';
-    document.getElementById('e-title').value=ev.title;document.getElementById('e-cat').value=ev.cat;
-    document.getElementById('e-day').value=ev.day;document.getElementById('e-start').value=ev.start;document.getElementById('e-end').value=ev.end;
-    del.style.display='inline-block';
-  }else{
-    document.getElementById('modalTitle').textContent='New event';
-    document.getElementById('e-title').value='';document.getElementById('e-cat').value='academic';
-    document.getElementById('e-day').value=day!=null?day:0;
-    document.getElementById('e-start').value=hour!=null?hour:9;
-    document.getElementById('e-end').value=hour!=null?Math.min(hour+1,END_HOUR):10;
-    del.style.display='none';
-  }
-  document.getElementById('modalBg').classList.add('open');
-}
-function closeModal(){document.getElementById('modalBg').classList.remove('open');}
-document.getElementById('addEventBtn').onclick=function(){openModal(null);};
-document.getElementById('cancelEvent').onclick=closeModal;
-document.getElementById('modalBg').onclick=function(e){if(e.target.id==='modalBg')closeModal();};
-document.getElementById('saveEvent').onclick=function(){
-  var t=document.getElementById('e-title').value.trim();if(!t)return;
-  var s=+document.getElementById('e-start').value,en=+document.getElementById('e-end').value;
-  if(en<=s)en=s+1;
-  var obj={title:t,cat:document.getElementById('e-cat').value,day:+document.getElementById('e-day').value,start:s,end:en};
-  if(editIdx!=null)events[editIdx]=obj;else events.push(obj);
-  saveEvents();closeModal();buildCalendar();
-};
-document.getElementById('deleteEvent').onclick=function(){if(editIdx!=null){events.splice(editIdx,1);saveEvents();closeModal();buildCalendar();}};
-document.getElementById('prevWeek').onclick=function(){weekOffset--;buildCalendar();};
-document.getElementById('nextWeek').onclick=function(){weekOffset++;buildCalendar();};
-document.getElementById('todayBtn').onclick=function(){weekOffset=0;buildCalendar();};
-renderTasks();buildCalendar();
-</script>
-</body>
-</html>
